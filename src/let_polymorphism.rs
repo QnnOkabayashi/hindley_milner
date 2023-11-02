@@ -50,14 +50,6 @@ impl<'hm> AlgorithmJ<'hm> {
         }
     }
 
-    fn enter_level(&mut self) {
-        self.current_level += 1;
-    }
-
-    fn exit_level(&mut self) {
-        self.current_level -= 1;
-    }
-
     fn newvar(&mut self) -> TypevarId {
         self.current_typevar += 1;
         self.current_typevar
@@ -159,9 +151,9 @@ impl<'hm> AlgorithmJ<'hm> {
                 Ok(return_type)
             }
             Expr::Let(var, value, body) => {
-                self.enter_level();
+                self.current_level += 1;
                 let value_type = self.infer(env, value)?;
-                self.exit_level();
+                self.current_level -= 1;
                 let mut let_env = env.clone();
                 let_env.insert(var, self.generalize(value_type));
                 let body_type = self.infer(&let_env, body)?;
